@@ -1,14 +1,23 @@
-const leftEdge = [1, 7, 13, 19, 25, 31];
-const rightEdge = [6, 12, 18, 24, 30, 36];
-const topEdge = [1, 2, 3, 4, 5, 6];
-const bottomEdge = [31, 32, 33, 34, 35, 36];
+let columns = 10;
+let interval = 1000;
 
-const grid = [1, 2, 3, 4, 5, 6,
-  7, 8, 9, 10, 11, 12,
-  13, 14, 15, 16, 17, 18,
-  19, 20, 21, 22, 23, 24,
-  25, 26, 27, 28, 29, 30,
-  31, 32, 33, 34, 35, 36];
+function buildSide(start) {
+  const edge = [];
+  let i = start;
+  while (i <= columns * columns) {
+    edge.push(i);
+    i += columns;
+  }
+  return edge;
+}
+
+const leftEdge = buildSide(1);
+const rightEdge = buildSide(columns);
+const topEdge = Array.from({ length: columns }, (_, i) => i + 1);
+const bottomEdge = Array.from({ length: columns }, (_,i) => i + ((columns*columns)-columns+1))
+
+
+const grid = Array.from({ length: columns * columns }, (_, i) => i + 1);
 
 const initialAliveCells = [21, 22, 23, 17, 10];
 
@@ -18,13 +27,17 @@ const isAlive = (num) => aliveCells.includes(num)
 const gridEl = document.getElementById("grid");
 const button = document.getElementById("start-stop-button");
 const resetButton = document.getElementById("reset-button");
+const intervalInput = document.getElementById("interval-input");
 
 function init() {
+  gridEl.style.setProperty('--columns', columns)
+  intervalInput.value = 1000;
   for (let i = 1; i <= grid.length; i++) {
     const div = document.createElement('div');
     div.classList.add("cell");
     div.setAttribute("data-id", i)
-    // div.textContent = i;
+    
+    div.textContent = i;
     gridEl.appendChild(div);
   }
 }
@@ -46,12 +59,12 @@ function cycle() {
   for (let i = 1; i <= grid.length; i++) {
     const alive = isAlive(i);
     const neighbors = [];
-    let above = i - 6;
+    let above = i - columns;
     if (above > 0) {
       neighbors.push(above);
     }
-    let below = i + 6;
-    if (below <= 36) {
+    let below = i + columns;
+    if (below <= columns^2) {
       neighbors.push(below);
     }
     if (!rightEdge.includes(i)) {
@@ -64,19 +77,19 @@ function cycle() {
       neighbors.push(left);
     }
     if (!leftEdge.includes(i) && !topEdge.includes(i)) {
-      let topLeft = i - 7;
+      let topLeft = i - columns-1;
       neighbors.push(topLeft);
     }
     if (!topEdge.includes(i) && !rightEdge.includes(i)) {
-      let topRight = i - 5;
+      let topRight = i - columns+1;
       neighbors.push(topRight);
     }
     if (!bottomEdge.includes(i) && !leftEdge.includes(i)) {
-      let bottomLeft = i + 5;
+      let bottomLeft = i + columns-1;
       neighbors.push(bottomLeft);
     }
     if (!bottomEdge.includes(i) && !rightEdge.includes(i)) {
-      let bottomRight = i + 7;
+      let bottomRight = i + columns+1;
       neighbors.push(bottomRight);
     }
     const aliveNeighbors = neighbors.filter(n => isAlive(n))
@@ -114,7 +127,7 @@ function toggle() {
     intervalId = setInterval(() => {
       cycle();
       render();
-    }, 1000);
+    }, 500);
   }
 }
 
@@ -138,4 +151,8 @@ gridEl.addEventListener("click", (event) => {
   }
 
   render();
+})
+
+intervalInput.addEventListener("input", (event) => {
+  interval = event.target.value;
 })
