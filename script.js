@@ -11,13 +11,19 @@ function buildSide(start) {
   return edge;
 }
 
-const leftEdge = buildSide(1);
-const rightEdge = buildSide(columns);
-const topEdge = Array.from({ length: columns }, (_, i) => i + 1);
-const bottomEdge = Array.from({ length: columns }, (_,i) => i + ((columns*columns)-columns+1))
+let leftEdge = []
+let rightEdge = []
+let topEdge = []
+let bottomEdge = []
+let grid = [];
 
-
-const grid = Array.from({ length: columns * columns }, (_, i) => i + 1);
+function calculateGrid() {
+  leftEdge = buildSide(1);
+  rightEdge = buildSide(columns);
+  topEdge = Array.from({ length: columns }, (_, i) => i + 1);
+  bottomEdge = Array.from({ length: columns }, (_,i) => i + ((columns*columns)-columns+1))
+  grid = Array.from({ length: columns * columns }, (_, i) => i + 1);
+}
 
 const initialAliveCells = [21, 22, 23, 17, 10];
 
@@ -28,18 +34,23 @@ const gridEl = document.getElementById("grid");
 const button = document.getElementById("start-stop-button");
 const resetButton = document.getElementById("reset-button");
 const intervalInput = document.getElementById("interval-input");
+const columnsInput = document.getElementById('column-count')
 
 function init() {
-  gridEl.style.setProperty('--columns', columns)
+  gridEl.style.setProperty('--columns', columns);
+  calculateGrid();
+  columnsInput.value = columns;
   intervalInput.value = 1000;
+  const elements = [];
   for (let i = 1; i <= grid.length; i++) {
     const div = document.createElement('div');
     div.classList.add("cell");
     div.setAttribute("data-id", i)
+    elements.push(div);
+    // div.textContent = i;
     
-    div.textContent = i;
-    gridEl.appendChild(div);
   }
+  gridEl.replaceChildren(...elements);
 }
 
 function render() {
@@ -155,4 +166,11 @@ gridEl.addEventListener("click", (event) => {
 
 intervalInput.addEventListener("input", (event) => {
   interval = event.target.value;
+})
+columnsInput.addEventListener("input", (event) => {
+  if (event.target.value) {
+  columns = event.target.value;
+  init();
+    render();
+  }
 })
