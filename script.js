@@ -34,7 +34,8 @@ const gridEl = document.getElementById("grid");
 const button = document.getElementById("start-stop-button");
 const resetButton = document.getElementById("reset-button");
 const intervalInput = document.getElementById("interval-input");
-const columnsInput = document.getElementById('column-count')
+const columnsInput = document.getElementById('column-count');
+const clearButton = document.getElementById("clear-button");
 
 function init() {
   gridEl.style.setProperty('--columns', columns);
@@ -58,17 +59,21 @@ function render() {
   allCells.forEach(el => {
     el.classList.remove('alive');
   })
+  if (aliveCells.length) {
+  
   const aliveEls = gridEl.querySelectorAll(aliveCells.map(c => '[data-id="' + c + '"]').join(", "));
   // [data-id="1"], [data-id="2"], etc
   aliveEls.forEach(el => {
     el.classList.add("alive");
   })
+  }
 }
 
 function cycle() {
   let nextAliveCells = [];
   for (let i = 1; i <= grid.length; i++) {
     const alive = isAlive(i);
+    console.log({alive});
     const neighbors = [];
     let above = i - columns;
     if (above > 0) {
@@ -111,6 +116,7 @@ function cycle() {
       nextAliveCells.push(i);
     }
   }
+  console.log({nextAliveCells})
   aliveCells = nextAliveCells;
 }
 
@@ -173,4 +179,10 @@ columnsInput.addEventListener("input", (event) => {
   init();
     render();
   }
+})
+
+clearButton.addEventListener("click", () => {
+  stop(); 
+  aliveCells = [];
+  render();
 })
