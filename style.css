@@ -7,8 +7,8 @@ html {
   height: 600px;
   border: 1px solid black;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(var(--columns, 6), 1fr);
+  grid-template-rows: repeat(var(--columns, 6), 1fr);
 }
 
 #grid .cell {
